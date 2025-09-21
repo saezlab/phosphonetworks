@@ -25,9 +25,13 @@ Gurobi is used to solve the Rooted Prize-Collecting Steiner Tree problem describ
 Academic licenses are available free of charge.  
 Request a license at: [https://www.gurobi.com/](https://www.gurobi.com/)
 
-### 2. Graphviz
+### 2. Graphviz (Optional)
 Graphviz is needed to generate network plots.  
 Download and install it from: [https://graphviz.org/download/](https://graphviz.org/download/)
+
+### 3. MMSeqs (Optional)
+MMSeqs is used to compute the kinase-kinase sequence similarity scores.
+Download and install it from: [https://mmseqs.com/](https://mmseqs.com/)
 
 ---
 
