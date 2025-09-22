@@ -172,7 +172,7 @@ def run_egf_gt_pipeline() -> None:
     # get illustrative nets
     mean_net = pp.network_methods.mean_selection(pkn, terminals, n_edges=10)
     pagerank_net = pp.network_methods.pagerank_selection(pkn, terminals, n_edges=10)
-    rpcst_net = pp.network_methods.my_pcst(pkn, terminals, n_edges = 10, mip = 0.01)
+    rpcst_net = pp.network_methods.rpcst_selection(pkn, terminals, n_edges = 10, mip = 0.01)
     net_dict = {'mean_net': mean_net, 'pagerank_net': pagerank_net, 'rpcst_net': rpcst_net} 
 
     # get lun data

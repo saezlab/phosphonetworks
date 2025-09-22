@@ -133,7 +133,7 @@ def pagerank_selection(
     subg = nx.from_pandas_edgelist(filt_edges, 'source', 'target', ['weight'], create_using=nx.DiGraph())
     return subg
 
-def my_pcst(
+def rpcst_selection(
     network: nx.DiGraph,
     terminals: Dict[str, float],
     root: str = 'P00533',
@@ -241,7 +241,7 @@ def solve_networks(input_dict_list: str, output_path: str) -> List[Dict[str, obj
         int_element = int_data.copy()
         mean_net = mean_selection(int_data['pkn'], int_data['terminals'], int_data['edge_length'])
         pr_net = pagerank_selection(int_data['pkn'], int_data['terminals'], int_data['edge_length'])
-        pcst_net = my_pcst(int_data['pkn'], int_data['terminals'], n_edges = int_data['edge_length'], mip = 0.05)
+        pcst_net = rpcst_selection(int_data['pkn'], int_data['terminals'], n_edges = int_data['edge_length'], mip = 0.05)
         # save networks as new elements in int_data
         int_element['mean_net'] = mean_net
         int_element['pr_net'] = pr_net 
