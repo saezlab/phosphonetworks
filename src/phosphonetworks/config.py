@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import to_hex
 
 CACHE_DIR = os.path.join(os.path.expanduser("~"), "Documents", "phosphonetworks_data")
+FIGURES_DIR = os.path.abspath(
+    os.environ.get("PHOSPHONETWORKS_FIGURES_DIR", "figures")
+)
 
 KINSUB_LABELS = {
     'literature': 'Literature',

@@ -8,10 +8,32 @@ from IPython.display import display
 
 import phosphonetworks as pp
 
-def run_kinsub_pipeline() -> bool:
-    """Execute the kinase–substrate resource benchmarking workflow."""
+
+def _resolve_figures_dir(figures_dir: str | os.PathLike | None) -> str:
+    """Return the directory where figures should be stored, creating it if needed."""
+
+    base_dir = os.fspath(figures_dir or pp.config.FIGURES_DIR)
+    os.makedirs(base_dir, exist_ok=True)
+    return base_dir
+
+
+def _figure_path(filename: str, figures_dir: str, subdir: str = 'individual') -> str:
+    """Build the full path for a figure inside the requested subdirectory."""
+
+    target_dir = os.path.join(figures_dir, subdir) if subdir else figures_dir
+    os.makedirs(target_dir, exist_ok=True)
+    return os.path.join(target_dir, filename)
+
+def run_kinsub_pipeline(figures_dir: str | os.PathLike | None = None) -> bool:
+    """Execute the kinase–substrate resource benchmarking workflow.
+
+    Args:
+        figures_dir: Optional base directory for saved figures. If ``None``,
+            ``pp.config.FIGURES_DIR`` is used.
+    """
 
     # load data
+    figures_dir = _resolve_figures_dir(figures_dir)
     _ = pp.kinsub.get_kinase_info_df(sequences=True)
     kinsub_df = pp.kinsub.get_combined_kinsub()
 
@@ -41,50 +63,56 @@ def run_kinsub_pipeline() -> bool:
     #### ---- plots ---- ####
     # kinase activity heatmaps
     data, plot = pp.viz.plot_hijazi_kinase_heatmap(hijazi_kin_act)
-    plot.save('figures/individual/hijazi_kinase_activity_heatmap.png', dpi=300)
+    plot.save(_figure_path('hijazi_kinase_activity_heatmap.png', figures_dir), dpi=300)
     plot.show()
 
     # Hijazi ROC summary
     data, plot = pp.viz.plot_hijazi_roc(roc_summary, resource_coverage, int_threshold=0.5)
-    plot.save('figures/individual/hijazi_roc_analysis.png', width=6, height=3, dpi=300)
+    plot.save(_figure_path('hijazi_roc_analysis.png', figures_dir), width=6, height=3, dpi=300)
     plot.show()
 
     # Hijazi ROC one threshold
     data, plot = pp.viz.plot_roc_curve(roc_data[roc_data['threshold'] == 0.5])
-    plot.save('figures/individual/hijazi_roc_curve.png', dpi=300)
+    plot.save(_figure_path('hijazi_roc_curve.png', figures_dir), dpi=300)
     plot.show()
 
     # Hijazi ROC across thresholds
     data, plot = pp.viz.plot_inhibition_thresholds(roc_summary)
-    plot.save('figures/individual/hijazi_inhibition_cutoffs.png', dpi=300)
+    plot.save(_figure_path('hijazi_inhibition_cutoffs.png', figures_dir), dpi=300)
     plot.show()
 
     # resource barplots
     data, plot = pp.viz.plot_kinsub_barplots(kinsub_selected)
-    plot.save('figures/individual/kinsub_barplots.png', width=8, height=2, dpi=300)
+    plot.save(_figure_path('kinsub_barplots.png', figures_dir), width=8, height=2, dpi=300)
     plot.show()
 
     # superfamily proportions
     data, plot = pp.viz.plot_kinase_superfamily_proportions(kinsub_selected)
-    plot.save('figures/individual/kinase_superfamily_proportions.png', width=3.5, height=3, dpi=300)
+    plot.save(_figure_path('kinase_superfamily_proportions.png', figures_dir), width=3.5, height=3, dpi=300)
     plot.show()
 
     # specialized sites ratio
     data, plot = pp.viz.plot_specialized_sites_ratio(kinsub_selected)
-    plot.save('figures/individual/specialized_sites_ratio.png', width=2, height=2, dpi=300)
+    plot.save(_figure_path('specialized_sites_ratio.png', figures_dir), width=2, height=2, dpi=300)
     plot.show()
 
     # target similarities
     data, plot = pp.viz.plot_target_similarity(target_similarity_df)
-    plot.save('figures/individual/target_similarity.png', width=2, height=2, dpi=300)
+    plot.save(_figure_path('target_similarity.png', figures_dir), width=2, height=2, dpi=300)
     plot.show()
 
     return True
 
-def run_site_pipeline() -> None:
-    """Generate summary figures for phosphosite-centric analyses."""
+def run_site_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
+    """Generate summary figures for phosphosite-centric analyses.
+
+    Args:
+        figures_dir: Optional base directory for saved figures. If ``None``,
+            ``pp.config.FIGURES_DIR`` is used.
+    """
 
     # load data and filter
+    figures_dir = _resolve_figures_dir(figures_dir)
     data_df = pp.phosphodata.get_all_studies()
     filt_df = pp.phosphodata.filter_studies(data_df)
 
@@ -94,44 +122,49 @@ def run_site_pipeline() -> None:
     #### ---- plots ---- ####
     # site count and silhouette scores
     data, plot = pp.viz.plot_site_count(data_df)
-    plot.save('figures/individual/site_count.png', dpi=300)
+    plot.save(_figure_path('site_count.png', figures_dir), dpi=300)
     plot.show()
 
     # silhouette scores
     data, plot = pp.viz.plot_sil_scores(sil_df)
-    plot.save('figures/individual/silhouette_scores.png', dpi=300)
+    plot.save(_figure_path('silhouette_scores.png', figures_dir), dpi=300)
     plot.show()
 
     # cluster means
     data, plot = pp.viz.plot_cluster_means(cluster_df)
-    plot.save('figures/individual/cluster_means.png', dpi=300)
+    plot.save(_figure_path('cluster_means.png', figures_dir), dpi=300)
     plot.show()
 
     # volcanos
     data, plot = pp.viz.plot_volcanos(filt_df)
-    plot.save('figures/individual/volcanos.png', dpi=300)
+    plot.save(_figure_path('volcanos.png', figures_dir), dpi=300)
     plot.show()
 
     # canonical sites
     data, plot = pp.viz.plot_canonical_sites(filt_df)
-    plot.save('figures/individual/egf_sites.png', dpi=300)
+    plot.save(_figure_path('egf_sites.png', figures_dir), dpi=300)
     plot.show()
 
     # combined corrs
     data, plot = pp.viz.plot_combined_cor(filt_df)
-    plot.save('figures/individual/overlap_correlation.png', dpi=300)
+    plot.save(_figure_path('overlap_correlation.png', figures_dir), dpi=300)
     plot.show()
 
     # corr per time point
     data, plot = pp.viz.cor_per_timepoint(data_df)
-    plot.save('figures/individual/time_point_cor.png', dpi=300)
+    plot.save(_figure_path('time_point_cor.png', figures_dir), dpi=300)
     plot.show()
 
+def run_egf_kin_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
+    """Profile EGFR-driven kinase activities across studies.
 
-def run_egf_kin_pipeline() -> None:
-    """Profile EGFR-driven kinase activities across studies."""
+    Args:
+        figures_dir: Optional base directory for saved figures. If ``None``,
+            ``pp.config.FIGURES_DIR`` is used.
+    """
 
     # load data
+    figures_dir = _resolve_figures_dir(figures_dir)
     kinsub = pp.kinsub.get_one_cutoff_combined_kinsub('Moderate')
     data_df = pp.phosphodata.filter_studies(pp.phosphodata.get_all_studies())
 
@@ -141,24 +174,29 @@ def run_egf_kin_pipeline() -> None:
     #### ---- plots ---- ####
     # kinase correlation
     data, plot = pp.viz.plot_kinase_correlation(kinase_df)
-    plot.save('figures/individual/kinase_corr.png', dpi=300)
+    plot.save(_figure_path('kinase_corr.png', figures_dir), dpi=300)
     plot.show()
 
     # top regulated kinases
     data, plot = pp.viz.plot_top_kinases_control(kinase_df)
-    plot.save('figures/individual/top_control_kinases.png', dpi=300)
+    plot.save(_figure_path('top_control_kinases.png', figures_dir), dpi=300)
     plot.show()
 
     # top egf kinases
     data, plot = pp.viz.plot_top_kinase_egf(kinase_df)
-    plot.save('figures/individual/top_egf_kinases.png', dpi=300)
+    plot.save(_figure_path('top_egf_kinases.png', figures_dir), dpi=300)
     plot.show()
 
+def run_egf_gt_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
+    """Evaluate ground-truth networks derived from EGFR perturbations.
 
-def run_egf_gt_pipeline() -> None:
-    """Evaluate ground-truth networks derived from EGFR perturbations."""
+    Args:
+        figures_dir: Optional base directory for saved figures. If ``None``,
+            ``pp.config.FIGURES_DIR`` is used.
+    """
 
     # prepare data
+    figures_dir = _resolve_figures_dir(figures_dir)
     kinsub = pp.kinsub.get_one_cutoff_combined_kinsub('Moderate')
     all_kinases = list(set(kinsub['source']))
     data_df = pp.phosphodata.get_all_studies()
@@ -173,8 +211,11 @@ def run_egf_gt_pipeline() -> None:
     # get illustrative nets
     mean_net = pp.network_methods.mean_selection(pkn, terminals, n_edges=10)
     pagerank_net = pp.network_methods.pagerank_selection(pkn, terminals, n_edges=10)
-    rpcst_net = pp.network_methods.rpcst_selection(pkn, terminals, n_edges = 10, mip = 0.01)
-    net_dict = {'mean_net': mean_net, 'pagerank_net': pagerank_net, 'rpcst_net': rpcst_net} 
+    # commented to prevent GUROBI complaints during testing, can be removed once gurobi is available
+    #rpcst_net = pp.network_methods.rpcst_selection(pkn, terminals, n_edges = 10, mip = 0.01)
+    net_dict = {'mean_net': mean_net, 
+                #'rpcst_net': rpcst_net,
+                'pagerank_net': pagerank_net} 
 
     # get lun data
     lun_diffdata = pp.netgt.get_lun_diffdata()
@@ -201,34 +242,40 @@ def run_egf_gt_pipeline() -> None:
 
     # plot top hits per KO kinase
     toplot, plot = pp.viz.plot_top_lundata(lun_diffdata)
-    plot.save('figures/individual/egf_netgt_lun.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_lun.png', figures_dir), dpi=300)
     plot.show()
 
     # top correlations
     data, plot = pp.viz.plot_top_corrs(filt_corr, wide_hek)
-    plot.save('figures/individual/egf_netgt_corrs.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_corrs.png', figures_dir), dpi=300)
     display(plot.draw())
 
     # plot ground truth correlation values
     data, plot = pp.viz.plot_gt_corrs(filt_corr, lun_gt_ints, signor_gt_ints)
-    plot.save('figures/individual/egf_netgt_gtcorrs.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_gtcorrs.png', figures_dir), dpi=300)
     plot.show()
 
     # plot ground truth counts
     data, plot = pp.viz.plot_gt_counts(kk_df, all_ints)
-    plot.save('figures/individual/egf_netgt_gtcounts.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_gtcounts.png', figures_dir), dpi=300)
     display(plot.draw())
 
     # plot per cut-off top n 
     data, plot = pp.viz.plot_n_top_cutoffs(kinsub)
-    plot.save('figures/individual/egf_netgt_ntopcutoff.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_ntopcutoff.png', figures_dir), dpi=300)
     plot.show()
 
 
-def run_net_benchmark_pipeline() -> None:
-    """Benchmark network reconstruction algorithms against curated GT sets."""
+def run_net_benchmark_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
+    """Benchmark network reconstruction algorithms against curated GT sets.
+
+    Args:
+        figures_dir: Optional base directory for saved figures. If ``None``,
+            ``pp.config.FIGURES_DIR`` is used.
+    """
 
     # load kinase activities
+    figures_dir = _resolve_figures_dir(figures_dir)
     kinsub = pp.kinsub.get_one_cutoff_combined_kinsub('Moderate')
     data_df = pp.phosphodata.filter_studies(pp.phosphodata.get_all_studies())
     kinase_df = pp.methods.egf_kinase_activity_analysis(kinsub, data_df)
@@ -252,5 +299,5 @@ def run_net_benchmark_pipeline() -> None:
 
     #### ---- plots ---- ####
     data, plot = pp.viz.plot_net_results_heatmap(res_df)
-    plot.save('figures/individual/egf_netgt_heatmap.png', dpi=300)
+    plot.save(_figure_path('egf_netgt_heatmap.png', figures_dir), dpi=300)
     plot.show()
