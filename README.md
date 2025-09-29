@@ -18,18 +18,18 @@ Clone the repository and install the package with pip:
 pip install .
 ```
 
-Two additional system dependencies are required:
+Additional dependencies are required for specific analyses and visualizations:
 
 ### 1. Gurobi
 Gurobi is used to solve the Rooted Prize-Collecting Steiner Tree problem described in the manuscript.  
 Academic licenses are available free of charge.  
 Request a license at: [https://www.gurobi.com/](https://www.gurobi.com/)
 
-### 2. Graphviz (Optional)
+### 2. Graphviz
 Graphviz is needed to generate network plots.  
 Download and install it from: [https://graphviz.org/download/](https://graphviz.org/download/)
 
-### 3. MMSeqs (Optional)
+### 3. MMSeqs 
 MMSeqs is used to compute the kinase-kinase sequence similarity scores.
 Download and install it from: [https://mmseqs.com/](https://mmseqs.com/)
 

@@ -36,6 +36,7 @@ def run_kinsub_pipeline() -> bool:
     # compute kinase similarities
     target_similarity_df = pp.kinsub.get_target_similarity_df(kinsub_selected)
     target_similarity_df = target_similarity_df[target_similarity_df['score_seq']>=50]
+    print(f"Number of kinase pairs with sequence similarity >= 50: {target_similarity_df.shape[0]}")
 
     #### ---- plots ---- ####
     # kinase activity heatmaps
