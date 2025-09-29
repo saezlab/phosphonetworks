@@ -265,7 +265,6 @@ def run_egf_gt_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
     plot.save(_figure_path('egf_netgt_ntopcutoff.png', figures_dir), dpi=300)
     plot.show()
 
-
 def run_net_benchmark_pipeline(figures_dir: str | os.PathLike | None = None) -> None:
     """Benchmark network reconstruction algorithms against curated GT sets.
 

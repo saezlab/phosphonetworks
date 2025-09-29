@@ -2,11 +2,9 @@ name: Paper Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   run:
@@ -15,7 +13,9 @@ jobs:
       PYTHONUNBUFFERED: "1"
       MPLBACKEND: Agg
       PHOSPHONETWORKS_FIGURES_DIR: ${{ github.workspace }}/figures
-      PHOSPHONETWORKS_DATA_DIR: ${{ runner.temp }}/phosphonetworks_dataset
+      # Keep dataset inside workspace so caching/restores are predictable
+      PHOSPHONETWORKS_DATA_DIR: ${{ github.workspace }}/.cache/phosphonetworks_dataset
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,10 +31,13 @@ jobs:
           sudo apt-get install -y graphviz libgraphviz-dev pkg-config
 
       - name: Cache manuscript dataset
+        id: cache-dataset
         uses: actions/cache@v4
         with:
           path: ${{ env.PHOSPHONETWORKS_DATA_DIR }}
           key: ${{ runner.os }}-phosphonetworks-dataset-v1
+          restore-keys: |
+            ${{ runner.os }}-phosphonetworks-dataset-
 
       - name: Install package and test dependencies
         run: |
@@ -43,4 +46,5 @@ jobs:
 
       - name: Run paper pipeline test
         run: |
+          # Your test will download/populate $PHOSPHONETWORKS_DATA_DIR if empty
           python -m pytest tests/test_paper_pipeline.py
