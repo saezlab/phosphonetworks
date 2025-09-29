@@ -1,5 +1,6 @@
 # PhosphoNetworks Manuscript Code
 [![Package Install](https://github.com/saezlab/phosphonetworks/actions/workflows/package-install.yml/badge.svg)](https://github.com/saezlab/phosphonetworks/actions/workflows/package-install.yml)
+[![Paper Pipeline](https://github.com/saezlab/phosphonetworks/actions/workflows/paper-pipeline.yml/badge.svg)](https://github.com/saezlab/phosphonetworks/actions/workflows/paper-pipeline.yml)
 
 This repository contains the high-level code and notebooks that accompany the manuscript:  
 

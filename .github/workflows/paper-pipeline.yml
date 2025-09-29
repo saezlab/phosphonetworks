@@ -15,7 +15,7 @@ jobs:
       PYTHONUNBUFFERED: "1"
       MPLBACKEND: Agg
       PHOSPHONETWORKS_FIGURES_DIR: ${{ github.workspace }}/figures
-      PHOSPHONETWORKS_DATA_DIR: ${{ runner.home }}/.cache/phosphonetworks_dataset
+      PHOSPHONETWORKS_DATA_DIR: ${{ runner.temp }}/phosphonetworks_dataset
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
