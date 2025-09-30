@@ -14,7 +14,7 @@ from IPython.display import Image
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from mizani.formatters import scientific_format
-from plotnine import *  # noqa: F403,F401 - re-exported plotting API
+from plotnine import *  
 from sklearn.preprocessing import StandardScaler
 
 import phosphonetworks as pp

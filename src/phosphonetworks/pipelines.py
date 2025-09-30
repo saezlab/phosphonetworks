@@ -16,7 +16,6 @@ def _resolve_figures_dir(figures_dir: str | os.PathLike | None) -> str:
     os.makedirs(base_dir, exist_ok=True)
     return base_dir
 
-
 def _figure_path(filename: str, figures_dir: str, subdir: str = 'individual') -> str:
     """Build the full path for a figure inside the requested subdirectory."""
 
@@ -286,8 +285,8 @@ def run_net_benchmark_pipeline(figures_dir: str | os.PathLike | None = None) -> 
 
     # run network analysis
     results = pp.network_methods.solve_networks(
-        pp.config.CACHE_DIR + 'intermediate_files/network_input_dicts.pkl',
-        output_path=os.path.join(pp.config.CACHE_DIR, 'intermediate_files/result_networks.pkl')
+        pp.config.DATA_DIR + 'intermediate_files/network_input_dicts.pkl',
+        output_path=os.path.join(pp.config.DATA_DIR, 'intermediate_files/result_networks.pkl')
     )
 
     # prepare ground truth interactions

@@ -17,7 +17,7 @@ import phosphonetworks as pp
 def get_signor_egf_df(mode: str = 'protein') -> pd.DataFrame:
     """Return SIGNOR EGFR interactions at protein or site resolution."""
 
-    signor_dir = os.path.join(pp.config.CACHE_DIR, 'signor')
+    signor_dir = os.path.join(pp.config.DATA_DIR, 'signor')
     signor_egfr = pd.read_csv(os.path.join(signor_dir, 'SIGNOR_egfr.tsv'), sep='\t')
     signor_pfs = pd.read_csv(os.path.join(signor_dir, 'SIGNOR_PF.csv'), sep=';')
     signor_cps = pd.read_csv(os.path.join(signor_dir, 'SIGNOR_complexes.csv'), sep=';')
@@ -124,10 +124,10 @@ def get_canonical_egf_network(mode: str = 'protein', symbol: bool = True) -> nx.
 def get_ochoa_functional_scores() -> Dict[str, float]:
     """Return Ochoa et al. functional scores keyed by UniProt site IDs."""
 
-    int_f = os.path.join(pp.config.CACHE_DIR, 'functional_scores', '41587_2019_344_MOESM5_ESM.xlsx')
+    int_f = os.path.join(pp.config.DATA_DIR, 'functional_scores', '41587_2019_344_MOESM5_ESM.xlsx')
     int_df = pd.read_excel(int_f, sheet_name='functional_score')
 
-    fasta_file = os.path.join(pp.config.CACHE_DIR, 'uniprot', 'UP000005640_9606.fasta')
+    fasta_file = os.path.join(pp.config.DATA_DIR, 'uniprot', 'UP000005640_9606.fasta')
     seq_dict = SeqIO.to_dict(SeqIO.parse(fasta_file, 'fasta'))
     seq_dict = {re.search(r'\|(.+?)\|', k).group(1): v for k, v in seq_dict.items()}
 
@@ -154,11 +154,11 @@ def get_lun_diffdata() -> pd.DataFrame:
     """Process Lun et al. kinase overexpression screen into tidy differences."""
 
     # Step 1 — Define paths and load raw data (metadata, antibodies, assay data)
-    base_dir = os.path.join(pp.config.CACHE_DIR, 'egf_kinase_overexpression')
+    base_dir = os.path.join(pp.config.DATA_DIR, 'egf_kinase_overexpression')
     meta = pd.read_excel(base_dir + '/1-s2.0-S1097276519303132-mmc2.xlsx')
     ab_info = pd.read_excel(base_dir + '/ab_manually_annotated.xlsx')
     data = pd.read_excel(base_dir + '/1-s2.0-S1097276519303132-mmc5.xlsx')
-    fasta_file = os.path.join(pp.config.CACHE_DIR, 'uniprot', 'UP000005640_9606.fasta')
+    fasta_file = os.path.join(pp.config.DATA_DIR, 'uniprot', 'UP000005640_9606.fasta')
     proteome = SeqIO.to_dict(SeqIO.parse(fasta_file, 'fasta'))
     proteome = {re.search(r'\|(.+?)\|', k).group(1): v for k, v in proteome.items()}
 
@@ -312,7 +312,7 @@ def get_hek293tr_interactions(
 
 def prepare_all_gt_ints(
     cache_file: str = os.path.join(
-        pp.config.CACHE_DIR, 'intermediate_files', 'gt_interactions.pkl'
+        pp.config.DATA_DIR, 'intermediate_files', 'gt_interactions.pkl'
     )
 ) -> Dict[str, List[str]]:
     """Assemble and optionally cache all ground-truth interaction collections."""

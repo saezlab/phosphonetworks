@@ -1,13 +1,14 @@
 """Configuration constants and color palettes for phosphonetworks plots."""
 
 import os
-
 import matplotlib.pyplot as plt
 from matplotlib.colors import to_hex
 
-CACHE_DIR = os.path.join(os.path.expanduser("~"), "Documents", "phosphonetworks_data")
+DATA_DIR = os.path.join(
+    'data'
+)
 FIGURES_DIR = os.path.abspath(
-    os.environ.get("PHOSPHONETWORKS_FIGURES_DIR", "figures")
+    'figures'
 )
 
 KINSUB_LABELS = {
@@ -48,3 +49,10 @@ GT_LABELS = {
     'hek293_moderate': 'Correlation\n(Moderate)',
     'hek293_strict': 'Correlation\n(Strict)'
 }
+
+
+def set_data_dir(path):
+    """Update the base directory used for cached and downloaded data."""
+    print('Setting data directory to', path)
+    global DATA_DIR
+    DATA_DIR = os.path.abspath(path)

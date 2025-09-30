@@ -22,7 +22,7 @@ def get_kinase_info_df(sequences: bool = False) -> pd.DataFrame:
     """Return the Coral kinase annotation table, optionally with sequence strings."""
 
     coral_label_file = os.path.join(
-        pp.config.CACHE_DIR, 
+        pp.config.DATA_DIR, 
         "kinsub/coral_kinmaplabels.txt"
     )
     dual_spec_kins = [
@@ -42,7 +42,7 @@ def get_kinase_info_df(sequences: bool = False) -> pd.DataFrame:
 
     if sequences:
         sequences_file = os.path.join(
-            pp.config.CACHE_DIR, "uniprot/UP000005640_9606.fasta"
+            pp.config.DATA_DIR, "uniprot/UP000005640_9606.fasta"
         )
         # read the sequences from the fasta file
         sequences = {}
@@ -64,7 +64,7 @@ def get_omnipath_kinsub() -> pd.DataFrame:
     """Load and filter OmniPath enzyme–substrate annotations."""
 
     omnipath_file = os.path.join(
-        pp.config.CACHE_DIR, "kinsub/omnipath_enzsub.csv.gz"
+        pp.config.DATA_DIR, "kinsub/omnipath_enzsub.csv.gz"
     )
 
     kinase_info = get_kinase_info_df()
@@ -95,8 +95,8 @@ def get_omnipath_kinsub() -> pd.DataFrame:
 def get_st_kinase_library() -> pd.DataFrame:
     """Return the serine/threonine kinase library in long form."""
 
-    data_f = os.path.join(pp.config.CACHE_DIR, "kinsub/st_kinase_library_data.csv.gz")
-    mapping_f = os.path.join(pp.config.CACHE_DIR, "kinsub/st_kinase_library_mapping.csv") 
+    data_f = os.path.join(pp.config.DATA_DIR, "kinsub/st_kinase_library_data.csv.gz")
+    mapping_f = os.path.join(pp.config.DATA_DIR, "kinsub/st_kinase_library_mapping.csv") 
 
     data = pd.read_csv(data_f)
     mapping = pd.read_csv(mapping_f)
@@ -121,8 +121,8 @@ def get_st_kinase_library() -> pd.DataFrame:
 def get_tyr_kinase_library() -> pd.DataFrame:
     """Return the tyrosine kinase library in long form."""
 
-    data_f = os.path.join(pp.config.CACHE_DIR, "kinsub/tyr_kinase_library_data.csv.gz")
-    mapping_f = os.path.join(pp.config.CACHE_DIR, "kinsub/tyr_kinase_library_mapping.csv")
+    data_f = os.path.join(pp.config.DATA_DIR, "kinsub/tyr_kinase_library_data.csv.gz")
+    mapping_f = os.path.join(pp.config.DATA_DIR, "kinsub/tyr_kinase_library_mapping.csv")
 
     data = pd.read_csv(data_f)
     mapping = pd.read_csv(mapping_f)
@@ -170,7 +170,7 @@ def get_kinase_library() -> pd.DataFrame:
 def get_phosformer() -> pd.DataFrame:
     """Load the Phosformer kinase–substrate predictions."""
 
-    data_f = os.path.join(pp.config.CACHE_DIR, "kinsub/phosformer.csv.gz")
+    data_f = os.path.join(pp.config.DATA_DIR, "kinsub/phosformer.csv.gz")
     phosformer = pd.read_csv(data_f)
 
     # group by source and target and keep only max score
@@ -196,7 +196,7 @@ def get_combined_kinsub(
 ) -> pd.DataFrame:
     """Assemble kinase resources (OmniPath, kinase libraries, Phosformer)."""
 
-    cache_dir = pp.config.CACHE_DIR
+    cache_dir = pp.config.DATA_DIR
     kinase_info = get_kinase_info_df()
 
     if cutoffs is None:
@@ -301,7 +301,7 @@ def run_mmseqs_pipeline() -> pd.DataFrame:
 
     # check if cache exists
     kin_info_df = get_kinase_info_df(sequences=True)
-    cache_dir = pp.config.CACHE_DIR
+    cache_dir = pp.config.DATA_DIR
     cache_file = os.path.join(cache_dir, "intermediate_files/identity_seq_matrix.pkl")
     if os.path.exists(cache_file):
         with open(cache_file, "rb") as f:
@@ -366,7 +366,7 @@ def combined_kinsub_target_similarity(
 ) -> Dict[str, pd.DataFrame]:
     """Compute target similarity for each resource with caching."""
 
-    cache_dir = pp.config.CACHE_DIR
+    cache_dir = pp.config.DATA_DIR
     cache_file = os.path.join(cache_dir, "intermediate_files/combined_kinsub_target_similarity.pkl")
     if os.path.exists(cache_file):
         with open(cache_file, "rb") as f:

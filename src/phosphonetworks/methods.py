@@ -104,7 +104,7 @@ def hijazi_kinase_activity(
 ) -> pd.DataFrame:
     """Score Hijazi et al. drug responses for every kinase resource, caching results."""
 
-    cache_path = os.path.join(pp.config.CACHE_DIR, cache_filename)
+    cache_path = os.path.join(pp.config.DATA_DIR, cache_filename)
     if os.path.exists(cache_path):
         with open(cache_path, "rb") as handle:
             return pickle.load(handle)
@@ -262,7 +262,7 @@ def hijazi_roc_wrapper(
     thresholds: Iterable[float] = np.arange(0.1, 0.9, 0.1),
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Compute ROC summaries across multiple inhibition thresholds."""
-    cache_file = os.path.join(pp.config.CACHE_DIR, 'intermediate_files/hijazi_roc.pickle')
+    cache_file = os.path.join(pp.config.DATA_DIR, 'intermediate_files/hijazi_roc.pickle')
     if os.path.exists(cache_file):
         with open(cache_file, 'rb') as f:
             roc_summary, roc_data = pickle.load(f)
@@ -290,7 +290,7 @@ def egf_kinase_activity_analysis(
     data_df: pd.DataFrame,
     permutations: int = 0,
     cache_file: str | None = os.path.join(
-        pp.config.CACHE_DIR, 'intermediate_files', 'egf_kinase_activity.pkl'
+        pp.config.DATA_DIR, 'intermediate_files', 'egf_kinase_activity.pkl'
     ),
 ) -> pd.DataFrame:
     """Compute kinase activities per resource/study, with optional random permutations."""

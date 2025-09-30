@@ -68,7 +68,7 @@ def prepare_input_dict(
     kinase_df: pd.DataFrame,
     edge_lengths: Iterable[int],
     outfile: str = os.path.join(
-        pp.config.CACHE_DIR, 'intermediate_files', 'network_input_dicts.pkl'
+        pp.config.DATA_DIR, 'intermediate_files', 'network_input_dicts.pkl'
     )
 ) -> List[Dict[str, object]]:
     """Materialise terminal sets per resource/study combination for network solvers."""

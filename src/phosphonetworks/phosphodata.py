@@ -18,7 +18,7 @@ def get_hijazi() -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Load Hijazi et al. drug-response data and curate inhibition metadata."""
 
     uniprot_to_symbol, symbol_to_uniprot = utils.get_uniprot_symbol_mapping()
-    cache_dir = config.CACHE_DIR
+    cache_dir = config.DATA_DIR
 
     hl_60_file = os.path.join(cache_dir, "phosphodata/hijazi/HL60.xlsm")
     mcf7_file = os.path.join(cache_dir, "phosphodata/hijazi/MCF7.xlsm")
@@ -76,14 +76,14 @@ def get_egf_site_data() -> pd.DataFrame:
     """Return the preprocessed EGF stimulation dataset."""
 
     egf_path = os.path.join(
-        config.CACHE_DIR, "intermediate_files/preprocessed_egf_data.csv.gz"
+        config.DATA_DIR, "intermediate_files/preprocessed_egf_data.csv.gz"
     )
     return pd.read_csv(egf_path, compression='gzip', low_memory=False)
 
 def get_chen_interferon_data() -> pd.DataFrame:
     """Load Chen et al. interferon phosphoproteomics timepoints."""
 
-    chen_path = os.path.join(config.CACHE_DIR, "phosphodata/chen_interferon/mmc10.xlsx")
+    chen_path = os.path.join(config.DATA_DIR, "phosphodata/chen_interferon/mmc10.xlsx")
     chen_df = pd.read_excel(chen_path, sheet_name=1)
     uniprot_to_symbol, symbol_to_uniprot = utils.get_uniprot_symbol_mapping()
     chen_df['uniprot'] = chen_df['GeneName'].map(symbol_to_uniprot)
@@ -144,7 +144,7 @@ def get_chen_interferon_data() -> pd.DataFrame:
 
 def get_tuechler_tgfb_data() -> pd.DataFrame:
     """Load Tuechler et al. TGFβ phosphoproteomic contrasts."""
-    f_path = os.path.join(config.CACHE_DIR, "phosphodata/tuechler_tgfb/diff_phospho.csv")
+    f_path = os.path.join(config.DATA_DIR, "phosphodata/tuechler_tgfb/diff_phospho.csv")
     uniprot_to_symbol, symbol_to_uniprot = utils.get_uniprot_symbol_mapping()
     df = pd.read_csv(f_path)
     int_data = df[df['comparison'] == 'groupTGF_0.08h-groupctrl_0.08h'].copy()

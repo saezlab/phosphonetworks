@@ -16,30 +16,54 @@ import requests
 from phosphonetworks import config
 
 
-def download_manuscript_data(target_dir: str = "mydata") -> None:
-    """Download the publicly hosted dataset and extract it into ``target_dir``."""
+import os
+import zipfile
+import tempfile
+from typing import Optional
+
+import requests
+from tqdm import tqdm 
+
+
+def download_manuscript_data(target_dir: str = "data", chunk_size: int = 1024 * 128) -> None:
+    """Download the publicly hosted dataset and extract it into ``target_dir`` with progress bars."""
 
     if os.path.exists(target_dir):
         print(f"Directory {target_dir} already exists. Skipping download.")
-        return
+        return True
+    
+    print('Downloading manuscript data into', target_dir)
 
     url = "https://zenodo.org/records/17161034/files/phosphonetworks_data.zip?download=1"
     print(f"Downloading data from {url}...")
 
     tmp_path: Optional[str] = None
     try:
+        # --- Download with progress -----------------------------------------------------
         with requests.get(url, stream=True, timeout=60) as response:
             response.raise_for_status()
-            with tempfile.NamedTemporaryFile(
-                prefix="scape_", suffix=".zip", delete=False
-            ) as tmp:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        tmp.write(chunk)
+
+            total = int(response.headers.get("content-length", 0))  # 0 if unknown
+            # NamedTemporaryFile(delete=False) so we can reopen after closing context
+            with tempfile.NamedTemporaryFile(prefix="scape_", suffix=".zip", delete=False) as tmp, \
+                 tqdm(
+                     total=total if total > 0 else None,
+                     unit="B",
+                     unit_scale=True,
+                     unit_divisor=1024,
+                     desc="Downloading",
+                     leave=False,
+                 ) as pbar:
+                for chunk in response.iter_content(chunk_size=chunk_size):
+                    if not chunk:
+                        continue
+                    tmp.write(chunk)
+                    pbar.update(len(chunk))
                 tmp_path = tmp.name
 
         print(f"Download complete: {tmp_path}")
 
+        # --- Prepare target dir ---------------------------------------------------------
         os.makedirs(target_dir, exist_ok=False)
 
         def _is_within_directory(directory: str, target: str) -> bool:
@@ -47,14 +71,57 @@ def download_manuscript_data(target_dir: str = "mydata") -> None:
             abs_target = os.path.abspath(target)
             return os.path.commonpath([abs_dir]) == os.path.commonpath([abs_dir, abs_target])
 
+        # --- Extract with progress ------------------------------------------------------
         with zipfile.ZipFile(tmp_path) as archive:
-            for member in archive.infolist():
+            members = archive.infolist()
+
+            # Pre-check: refuse path traversal
+            for member in members:
                 dest_path = os.path.join(target_dir, member.filename)
                 if not _is_within_directory(target_dir, dest_path):
                     raise RuntimeError(
                         "Refusing to extract outside target dir: %s" % member.filename
                     )
-            archive.extractall(target_dir)
+
+            # Show progress by uncompressed size if available; otherwise by file count
+            total_bytes = sum(m.file_size for m in members)
+            by_size = total_bytes > 0
+
+            with tqdm(
+                total=(total_bytes if by_size else len(members)),
+                unit=("B" if by_size else "file"),
+                unit_scale=by_size,
+                unit_divisor=1024,
+                desc="Extracting",
+                leave=False,
+            ) as pbar:
+                for m in members:
+                    # Extract each member manually so we can update the bar incrementally
+                    source = archive.open(m)
+                    dest_path = os.path.join(target_dir, m.filename)
+
+                    if m.is_dir():
+                        os.makedirs(dest_path, exist_ok=True)
+                        pbar.update(m.file_size if by_size else 1)
+                        continue
+
+                    # Ensure parent dir exists
+                    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+
+                    with open(dest_path, "wb") as f:
+                        # Stream the file out in chunks while updating the bar
+                        remaining = m.file_size
+                        while True:
+                            buf = source.read(min(chunk_size, remaining if remaining else chunk_size))
+                            if not buf:
+                                break
+                            f.write(buf)
+                            if by_size:
+                                pbar.update(len(buf))
+                        if not by_size:
+                            pbar.update(1)
+
+                    source.close()
 
         print(f"Extraction complete: {target_dir}")
 
@@ -84,7 +151,7 @@ def download_manuscript_data(target_dir: str = "mydata") -> None:
 def get_uniprot_symbol_mapping() -> Tuple[Dict[str, str], Dict[str, str]]:
     """Return bidirectional UniProt ↔ gene symbol lookup dictionaries."""
 
-    translator_file = os.path.join(config.CACHE_DIR, "translator_df.csv")
+    translator_file = os.path.join(config.DATA_DIR, "translator_df.csv")
     translator_df = pd.read_csv(translator_file)
     translator_df = translator_df.dropna(subset=["symbol", "uniprot"])
     uniprot_to_symbol = translator_df.set_index("uniprot")["symbol"].to_dict()
