@@ -24,6 +24,8 @@ from typing import Optional
 import requests
 from tqdm import tqdm 
 
+import shutil
+
 
 def download_manuscript_data(target_dir: str = "data", chunk_size: int = 1024 * 128) -> None:
     """Download the publicly hosted dataset and extract it into ``target_dir`` with progress bars."""
@@ -60,8 +62,8 @@ def download_manuscript_data(target_dir: str = "data", chunk_size: int = 1024 * 
                     tmp.write(chunk)
                     pbar.update(len(chunk))
                 tmp_path = tmp.name
+        
 
-        print(f"Download complete: {tmp_path}")
 
         # --- Prepare target dir ---------------------------------------------------------
         os.makedirs(target_dir, exist_ok=False)
@@ -124,6 +126,33 @@ def download_manuscript_data(target_dir: str = "data", chunk_size: int = 1024 * 
                     source.close()
 
         print(f"Extraction complete: {target_dir}")
+
+        # once that download and extractions are complete
+        # we end up with a directory containing the data inside the 'phosphonetworks_data' 
+        # folder in the target_dir. We move contents up one level and 
+        # remove phosphonetworks_data and MACOS__X directories (forcing if necessary)
+        extracted_subdir = os.path.join(target_dir, "phosphonetworks_data")
+        if os.path.isdir(extracted_subdir):
+            for item in os.listdir(extracted_subdir):
+                s = os.path.join(extracted_subdir, item)
+                d = os.path.join(target_dir, item)
+                if os.path.isdir(s):
+                    if os.path.exists(d):
+                        shutil.rmtree(d, ignore_errors=True)
+                    os.rename(s, d)
+                else:
+                    if os.path.exists(d):
+                        os.remove(d)
+                    os.rename(s, d)
+            try:
+                os.rmdir(extracted_subdir)
+            except OSError:
+                pass
+        macos_dir = os.path.join(target_dir, "__MACOSX")
+        if os.path.isdir(macos_dir):
+            shutil.rmtree(macos_dir, ignore_errors=True)
+
+        
 
     except requests.RequestException as exc:
         print(f"Download failed: {exc}")

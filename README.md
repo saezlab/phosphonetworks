@@ -12,7 +12,7 @@ It also includes convenient wrappers for **kinase activity estimation** and **ki
 
 ## Installation
 
-Clone the repository and install the package with pip:
+Clone the repository and install the package with pip in an environment with **Python 3.10**:
 
 ```bash
 pip install .
