@@ -1,12 +1,12 @@
 # PhosphoNetworks Manuscript Code
 [![Package Install](https://github.com/saezlab/phosphonetworks/actions/workflows/package-install.yml/badge.svg)](https://github.com/saezlab/phosphonetworks/actions/workflows/package-install.yml)
 
-This repository contains the high-level code and notebooks that accompany the manuscript:  
+This repository contains the code and notebooks that accompany the manuscript:  
 
 *Garrido-Rodriguez et al., “Unexplored Signaling Pathways: Escaping the Streetlight Effect with Phosphoproteomics and Kinase–Substrate Interactions” (2025)*
 
 The `phosphonetworks` Python module provides all functions required to reproduce the analyses and figures in the paper.  
-It also includes convenient wrappers for **kinase activity estimation** and **kinase–kinase network inference**.
+It also includes convenient wrappers for **kinase activity estimation** and **kinase–kinase network inference** using the same methods described in the manuscript.
 
 ---
 
