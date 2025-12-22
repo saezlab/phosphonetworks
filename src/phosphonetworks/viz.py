@@ -206,6 +206,10 @@ def plot_gt_corrs(
     toplot['is_in_gt'] = toplot['is_in_gt'].replace({'NoGT': 'Not in set', 'CanonicalEGF': 'In SIGNOR', 'LunGT': 'In Overexpression'})
     toplot['is_in_gt'] = pd.Categorical(toplot['is_in_gt'], categories=[ 'Not in set', 'In SIGNOR', 'In Overexpression'], ordered=True)
 
+    # print N per GT
+    print("Counts per GT set:")
+    print(toplot['is_in_gt'].value_counts())
+
     # anova result
     if do_stats:
         anova_res = stats.f_oneway(
@@ -266,6 +270,8 @@ def plot_top_lundata(lun_diffdata: pd.DataFrame) -> Tuple[pd.DataFrame, ggplot]:
 
     # ko_symbol is category in int_kinase order
     toplot['ko_symbol'] = pd.Categorical(toplot['ko_symbol'], categories=int_kinases, ordered=True)
+    print("Counts per knockout kinase:")
+    print(toplot['ko_symbol'].value_counts())
     toplot_top = toplot.sort_values('diff', ascending=False).groupby('ko_symbol').head(1)
     p = (
         ggplot(toplot, aes(x='ko_symbol', y='diff')) +
